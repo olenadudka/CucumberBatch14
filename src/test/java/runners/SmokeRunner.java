@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
         glue="steps", //to  connect step def with feature files
         //when you set dry run to true, it stops actual execution
         //it will quickly scan all the gherkin steps whether they are implemented or not
-        dryRun=true,
+        dryRun=false,
         //when we set dry run to false, it starts execution again
         tags="@api", //if we need to execute just 1 scenario or 2 "@sprint3 or @sprint1"
 
