@@ -31,7 +31,7 @@ public class LoginSteps extends CommonMethods {
 
     @When("user enters valid username and valid password")
     public void user_enters_valid_username_and_valid_password() {
-        LoginPage login=new LoginPage();
+        //LoginPage login=new LoginPage();
       //  WebElement usernameField=driver.findElement(By.id("txtUsername"));
        // sendText(usernameField,ConfigReader.getPropertyValue("username"));//from common method
        // usernameField.sendKeys(ConfigReader.getPropertyValue("username"));

@@ -10,6 +10,7 @@ import org.openqa.selenium.WebElement;
 import runners.SmokeRunner;
 import utils.CommonMethods;
 import utils.Constants;
+import utils.DBUtility;
 import utils.ExcelReader;
 
 import java.util.Iterator;
@@ -18,7 +19,8 @@ import java.util.Map;
 
 public class AddEmployeeSteps extends CommonMethods {
 
-
+    String id;
+String fName, lName;
     @When("user clicks on PIM option")
     public void user_clicks_on_pim_option() {
        // WebElement pimOption = driver.findElement(By.id("menu_pim_viewPimModule"));
@@ -57,6 +59,8 @@ public class AddEmployeeSteps extends CommonMethods {
 
     @When("user enter {string} and {string}")
     public void user_enter_and(String firstName, String lastName) {
+        fName=firstName;
+        lName=lastName;
         sendText(addEmployee.firstNameField, firstName);
         sendText(addEmployee.lastNameField, lastName);
     }
@@ -84,27 +88,15 @@ public class AddEmployeeSteps extends CommonMethods {
                 sendText(addEmployee.lastNameField, lastNameValue);
                 sendText(addEmployee.middleNameField, middleNameValue);
 //HW verification
-                WebElement empIDElem=driver.findElement(By.id("employeeId")); //
-              String empID= empIDElem.getText(); //
+
                 click(addEmployee.saveButton);
-               click(dashboard.empListOption); //
-
-               sendText(employeeList.empSearchIdField, empID);//
-               click(employeeList.searchButton);//
-                Assert.assertEquals();driver.findElement(By.xpath("//table[@id='resultTable']/tbody/tr/td[2]")).getText();
-
-
-
-
                 Thread.sleep(2000);
                 //till this point one employee has been added
                 //verifying the employee is home-work
                 click(dashboard.addEmployeeOption);
                 Thread.sleep(2000);
             }
-
         }
-
     @When("user adds multiple employee from excel using {string} and verify it")
     public void user_adds_multiple_employee_from_excel_using_and_verify_it(String sheetName) throws InterruptedException {
 
@@ -121,30 +113,68 @@ public class AddEmployeeSteps extends CommonMethods {
             sendText(addEmployee.firstNameField, mapNewEmp.get("firstName"));
             sendText(addEmployee.middleNameField, mapNewEmp.get("middleName"));
             sendText(addEmployee.lastNameField, mapNewEmp.get("lastName"));
-
+            String empIdValue = addEmployee.empIdLocator.getAttribute("value");
             sendText(addEmployee.photograph, mapNewEmp.get("photograph"));
-
             if(!addEmployee.checkBox.isSelected()){
                 click(addEmployee.checkBox);
             }
-
             sendText(addEmployee.createusernameField, mapNewEmp.get("username"));
             sendText(addEmployee.createpasswordField, mapNewEmp.get("password"));
             sendText(addEmployee.confirmpasswordField, mapNewEmp.get("confirmPassword"));
 
             click(addEmployee.saveButton);
-
+            System.out.println("click taken on save button");
             //verification is in home-work
+            Thread.sleep(3000);
+
+            click(dashboard.empListOption);
             Thread.sleep(2000);
+            System.out.println("click taken on emp list option");
+
+            //to search the employee, we use emp id what we captured from attribute
+            sendText(employeeList.empSearchIdField, empIdValue);
+            click(employeeList.searchButton);
+
+            //verifying the employee added from the excel file
+
+            List<WebElement> rowData =
+                    driver.findElements(By.xpath("//*[@id='resultTable']/tbody/tr"));
+
+
+            for (int i =0; i<rowData.size(); i++){
+                System.out.println("I am inside the loop and worried about josh");
+                //getting the text of every element from here and storing it into string
+                String rowText = rowData.get(i).getText();
+                System.out.println(rowText);
+
+                String expectedData = empIdValue + " " + mapNewEmp.get("firstName")
+                        + " " + mapNewEmp.get("middleName") + " " + mapNewEmp.get("lastName");
+
+                //verifying the exact details  of the employee
+                Assert.assertEquals(expectedData, rowText);
+
+            }
+
             click(dashboard.addEmployeeOption);
             Thread.sleep(2000);
         }
-
-
     }
 
+    @When("user captures employee id")
+    public void user_captures_employee_id() {
+        id=addEmployee.empIdLocator.getAttribute("value");
+    }
 
+    @Then("added employee is displayed in database")
+    public void added_employee_is_displayed_in_database() {
 
+        String query=DatabaseSteps.getFnameLnameQuery()+id;
+        List<Map<String, String>> dataFromDatabase=DBUtility.getListOfMapsFromRset(query);
+
+        String fNameFromDb=dataFromDatabase.get(0).get("emp_firstname");
+        String lNameFromDb=dataFromDatabase.get(0).get("emp_lastname");
+
+        Assert.assertEquals(fName, fNameFromDb);
+        Assert.assertEquals(lName, lNameFromDb);
+    }
 }
-
-

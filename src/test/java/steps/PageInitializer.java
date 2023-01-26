@@ -6,6 +6,7 @@ import pages.EmployeeListPage;
 import pages.LoginPage;
 
 public class PageInitializer {
+    public static String id;
     public static LoginPage login;
     public static DashboardPage dashboard;
     public static AddEmployeePage addEmployee;

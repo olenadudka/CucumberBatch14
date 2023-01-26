@@ -17,8 +17,8 @@ public class DashboardSteps extends CommonMethods {
 
     @Then("user verify all the dashboard tabs")
     public void user_verify_all_the_dashboard_tabs(DataTable dataTable) {
-        List<String> expectedTabs=dataTable.asList();
-List<String> actualTabs=new ArrayList<>();
+        List<String> expectedTabs=dataTable.asList();  //tabs from feature file
+List<String> actualTabs=new ArrayList<>();  //from website
 for(WebElement ele: dashboard.dashboardTabs){
     actualTabs.add(ele.getText());
 }
